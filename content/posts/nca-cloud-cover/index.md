@@ -20,12 +20,12 @@ Cellular Automata are discrete models studied across various scientific discipli
 
 A well-known example of cellular automata is Conway's Game of Life:
 
-![Conway's Game of Life](https://upload.wikimedia.org/wikipedia/commons/e/e5/Gospers_glider_gun.gif)
+![Conway's Game of Life](figures/glider_gun.gif#small)
 *Figure 1: Conway's Game of Life, demonstrating complex behavior emerging from simple rules*
 
 Neural Cellular Automata (NCA), introduced by Mordvintsev et al. in their 2020 paper "Growing Neural Cellular Automata", extend this concept by replacing fixed update rules with learned rules implemented by neural networks. This allows for more complex and adaptive behavior, enabling the system to learn to produce specific patterns or behaviors.
 
-![Neural Cellular Automata](https://distill.pub/2020/growing-ca/fig1_1.mp4)
+![Neural Cellular Automata](figures/nca.svg)
 *Figure 2: Neural Cellular Automata growing a pattern (Source: Mordvintsev et al., 2020)*
 
 In an NCA, each cell's state is updated based on its current state and the states of its neighbors, but the update function is a trainable neural network. This makes NCAs a powerful tool for modeling complex, self-organizing systems.
@@ -38,10 +38,12 @@ The application of NCAs to cloud cover prediction is novel and potentially valua
 
 For this experiment, I used data from the Climate Hack.AI competition. The dataset consists of high-resolution satellite imagery of the UK and northwestern mainland Europe, collected using EUMETSAT's Spinning Enhanced Visible and InfraRed Imager Rapid Scanning Service.
 
+![Example Satellite Image](figures/example_image.png)
+*Figure 3: An uncropped example image of the UK and the region of Europe directly to the south east*
+
 The task involves predicting the next 2 hours of satellite images given an hour of previous data. Specifically, the input is 12 128x128 crops of satellite images at 5-minute intervals, and the goal is to predict the next 24 64x64 crops at 5-minute intervals.
 
-![Example Satellite Image](example_image.png)
-*Figure 3: An uncropped example image of the UK and the region of Europe directly to the south east*
+![Task](figures/crops.png)
 
 ### Cloud Formation as a System of PDEs
 
@@ -69,14 +71,18 @@ Here, $\Delta_x \mathbf{a}$ and $\Delta_y \mathbf{a}$ are approximations of the 
 
 $$
 \Delta_x \mathbf{A} = \begin{bmatrix}
--1 & 0 & 1\\
--2 & 0 & 2\\
+-1 & 0 & 1 \\\\
+-2 & 0 & 2 \\\\
 -1 & 0 & 1
 \end{bmatrix} 
-\ast \mathbf{A}, \quad
+\ast \mathbf{A},
+$$
+and
+$$
+\quad
 \Delta_y \mathbf{A} = \begin{bmatrix}
-1 & 2 & 1\\
-0 & 0 & 0\\
+1 & 2 & 1\\\\
+0 & 0 & 0\\\\
 -1 & -2 & -1
 \end{bmatrix} 
 \ast \mathbf{A}
@@ -106,18 +112,20 @@ $$
 
 $y_k$ and $\hat{y_k}$ are the target image and prediction at time step $k$, and $\gamma$ is a discount factor set to 0.97.
 
+![Loss function](figures/loss.png)
+
 ## Results
 
 I compared the NCA model to two benchmarks: a "last seen image" model and an optical flow model. The results are as follows:
 
-![Results Comparison](results.png)
+![Results Comparison](figures/results.png)
 *Figure 4: The NCA model compared to benchmarks*
 
 The NCA model achieved an average structural similarity of 0.710638, outperforming both the "last seen image" model (0.651985) and the optical flow model (0.705232).
 
 Here are some example outputs from the model:
 
-![Example Outputs](nca_out.png)
+![Example Outputs](figures/nca_out.png)
 *Figure 5: Example outputs from the model for the 1st, 5th, 9th, 13th, 17th and 21st target images (left to right). The target images (top) and the predicted images from the NCA (bottom).*
 
 ## Discussion
