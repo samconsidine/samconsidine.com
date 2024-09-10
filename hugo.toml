@@ -1,3 +1,100 @@
-baseURL = 'https://example.org/'
+baseURL = 'samconsidine.com'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'Sam Considine'
+theme = 'typo'
+
+# # # Disable tags
+# disableKinds = ['taxonomy']
+
+[taxonomies]
+tag = 'tags'
+
+[params]
+# Home meta description
+description = "Sam Considine's Blog"
+
+# Appearance settings
+theme = 'dark'
+colorPalette = 'default'
+hideHeader = false
+
+# Intro on main page, content in markdown
+homeIntroTitle = 'Hi!'
+homeIntroContent = """
+I'm an AI research engineer from London. I have extensive experience in Graph Neural Networks, search over LLMs and 3D understanding and reconstruction. Here are a few things I've done:
+
+- I created the horse racing algorithm that is used by almost all bookmakers to calculate the odds of in-play horse racing.
+- I started a company at 17 years old selling marketing information to giftware wholesalers.
+- I graduated from the Cambridge MPhil program with a distinction. My thesis won the Highly Commended Research Project award.
+- I Created a system for [recording video in 3D](https://www.impossiblemotion.io/viewer.html?asset=tennis-demo).
+
+I'm extremely passionate about AI and the future it will bring. If you have any interesting research projects, please reach out to me on [LinkedIn](https://linkedin.com/in/sam-considine)! You can find some examples of the work I've done below or in the [posts](/posts) section of this website.
+"""
+
+
+singleDateFormat = '2 Jan 2006'
+
+# Collection to display on home
+homeCollectionTitle = 'Posts'
+homeCollection = 'posts'
+
+# Lists parameters
+paginationSize = 100
+listSummaries = false
+listDateFormat = '02 Jan 2006'
+
+# Breadcrumbs
+breadcrumbs = true
+
+# Social icons
+[[params.social]]
+name = "linkedin"
+url = "https://www.linkedin.com/in/sam-considine/"
+
+[[params.social]]
+name = "github"
+url = "https://github.com/samconsidine"
+
+# Main menu pages
+[[params.menu]]
+name = "home"
+url = "/"
+
+[[params.menu]]
+name = "posts"
+url = "/posts"
+
+# [[params.menu]]
+# name = "about"
+# url = "/about"
+
+# [[params.menu]]
+# name = "tags"
+# url = "/tags"
+
+
+# Syntax highligth on code blocks
+[markup]
+[markup.highlight]
+style = 'bw'
+
+# Deploy settings
+
+[[deployment.matchers]]
+pattern = "^.+\\.(js|css|svg|ttf|woff2)$"
+cacheControl = "max-age=31536000, no-transform, public"
+gzip = true
+
+[[deployment.matchers]]
+pattern = "^.+\\.(png|jpg|gif|webp)$"
+cacheControl = "max-age=31536000, no-transform, public"
+gzip = false
+
+[params.giscus]
+enable = false
+repo = "tomfran/blog"
+repoid = "R_kgDOLtSszw"
+category = "General"
+categoryid = "DIC_kwDOLtSsz84CfLm4"
+mapping = "pathname"
+theme = "preferred_color_scheme"
