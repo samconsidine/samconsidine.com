@@ -1,6 +1,6 @@
 ---
 title: "Incorporating Biological Pathways Information to Aid Deep Learning on scRNA-seq Data"
-date: 2024-09-05
+date: 2022-04-26
 author: "Sam Considine"
 tags: ["deep learning", "bioinformatics", "graph neural networks", "scRNA-seq"]
 math: true
@@ -26,6 +26,8 @@ To tackle this challenge, I applied the GRAPE framework to the gene expression m
 - Variables (genes) are represented by one set of nodes
 - Observations (cells) are represented by another set of nodes
 - The values in the cells of the table become edge weights between the respective variable-observation pairs
+
+![GRAPE Diagram](figures/grape.png)
 
 I then used graph neural networks to perform classification of cell types on this bipartite graph structure.
 
@@ -60,7 +62,7 @@ Let's define a matrix, $\mathbf{P} \in \mathbb{R}^{N\times M}$, where rows repre
 
 $$
    \hat{\mathbf{P}}_{ij} = \begin{cases} 
-      1 & g_i\in p_j \\
+      1 & g_i\in p_j \\\\
       0 & g_i\notin p_j 
    \end{cases}
 $$
@@ -68,13 +70,12 @@ $$
 Then, we normalize this matrix:
 
 $$
-    \mathbf{P}_{ij} = \frac{\hat{\mathbf{P}}_{ij}}{\sum_{i=0}^N \hat{\mathbf{P}}_{ij}}
+    \mathbf{P}\_{ij} = \frac{\hat{\mathbf{P}}\_{ij}}{\sum\_{i=0}^N \hat{\mathbf{P}}\_{ij}}
 $$
-
 The layer update function for the modified GRAPE model becomes:
 
 $$
-h_u^{\ell+1} = \phi \Bigg( h_u^{\ell}, \sum_{v \in V} \Big( \mathbf{P}_v * \psi \left( h_v^{\ell}, e_{uv} \right) \Big) \Bigg)
+h\_u^{\ell+1} = \phi \Bigg( h\_u^{\ell}, \sum\_{v \in V} \Big( \mathbf{P}\_v * \psi \left( h\_v^{\ell}, e\_{uv} \right) \Big) \Bigg)
 $$
 
 where $*$ represents element-wise multiplication, $\psi: \mathbb{R}^{|e| + |h|} \mapsto \mathbb{R}^{M}$, and $\mathbf{P}_v$ is the row of the pathways matrix corresponding to gene $v$.
@@ -90,7 +91,7 @@ I compared four models in my experiments:
 
 Here are the results:
 
-![Model Comparison](figures/full_comparison.png)
+![Model Comparison](figures/model_comparison.png)
 
 The GRAPE variant incorporating biological pathways information significantly outperformed the others and scaled better with increasing numbers of genes. This suggests that the incorporation of domain knowledge may have effectively mitigated the hypothesized aggregation problem.
 
