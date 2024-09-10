@@ -59,9 +59,9 @@ Every layer in this topology is using instance normalization directly after the 
 The loss function of ReCoNet is crucial for achieving clear style and content separation while ensuring temporal consistency:
 
 $$
-\mathcal{L}(t-1, t) = \sum\_{i \in \{t-1, t\}}(\alpha\mathcal{L}\_\textit{content}(i) 
-                    + \beta\mathcal{L}\_{\textit{style}}(i)) 
-                    + \gamma\mathcal{L}\_{\textit{tv}}(i)
+\mathcal{L}(t-1, t) = \sum\_{i \in \{t-1, t\}}(\alpha\mathcal{L}\_\textit{content}(i)
+                    + \beta\mathcal{L}\_{\textit{style}}(i)
+                    + \gamma\mathcal{L}\_{\textit{tv}}(i)) \\\\ 
                     + \lambda\_f\mathcal{L}\_{\textit{temp,f}}(t-1, t) 
                     + \lambda\_o\mathcal{L}\_{\textit{temp,o}}(t-1, t)
 $$
@@ -78,7 +78,7 @@ Where:
 Content loss is defined as the mean squared error between the feature representations of the original and generated images:
 
 $$
-\mathcal{L}_{\textit{content}}(\vec{p}, \vec{x}, l) = \frac{1}{C_jH_jW_j} \sum_{i,j}(F_{ij}^{l} - P_{ij}^l)^2
+\mathcal{L}\_{\textit{content}}(\vec{p}, \vec{x}, l) = \frac{1}{C_jH_jW_j} \sum_{i,j}(F_{ij}^{l} - P_{ij}^l)^2
 $$
 
 Where $F_{ij}^{l}$ and $P_{ij}^l$ are the feature map activations of the generated image and the original image, respectively.
@@ -88,7 +88,7 @@ Where $F_{ij}^{l}$ and $P_{ij}^l$ are the feature map activations of the generat
 Style loss is calculated using the gram matrices of the feature maps:
 
 $$
-\mathcal{L}_{\textit{style}}(\vec{a},\vec{x}) = (\sum_{l=0}^{L}w_l) \frac{1}{4 N_l^2 M_l^2} \sum_{i,j}(G_{ij}^l - A_{ij}^l)^2
+\mathcal{L}\_{\textit{style}}(\vec{a},\vec{x}) = (\sum_{l=0}^{L}w_l) \frac{1}{4 N_l^2 M_l^2} \sum_{i,j}(G_{ij}^l - A_{ij}^l)^2
 $$
 
 Where $G_{ij}^l$ and $A_{ij}^l$ are the gram matrices of the generated image and the style image, respectively.
@@ -98,13 +98,13 @@ Where $G_{ij}^l$ and $A_{ij}^l$ are the gram matrices of the generated image and
 The output-level temporal loss penalizes deviations along the point trajectories of the frames, using optical flow to account for motion:
 
 $$
-\mathcal{L}_\textit{temp,o}(t-1, t) = \sum_{c} \frac{1}{D} M_t ||(O_t - W_t(O_{t-1}))_c - (I_t - W_t(I_{t-1}))_Y||^2
+\mathcal{L}\_\textit{temp,o}(t-1, t) = \sum_{c} \frac{1}{D} M_t ||(O_t - W_t(O\_{t-1}))_c - (I\_t - W\_t(I\_{t-1}))\_Y||^2
 $$
 
 The feature-level temporal loss enforces consistency between the features:
 
 $$
-\mathcal{L}_\textit{temp,f}(t-1, 1) = \frac{1}{D} M_t ||(F_t - W_t(F_{t-1})||^2
+\mathcal{L}\_\textit{temp,f}(t-1, 1) = \frac{1}{D} M_t ||(F_t - W_t(F_{t-1})||^2
 $$
 
 ## Implementation on the Coral Edge TPU
