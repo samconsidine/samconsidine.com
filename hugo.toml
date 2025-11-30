@@ -19,16 +19,18 @@ colorPalette = 'default'
 hideHeader = false
 
 # Intro on main page, content in markdown
-homeIntroTitle = 'Hi!'
+homeIntroTitle = "Sam Considine's Page"
 homeIntroContent = """
-I'm an AI research engineer from London. I have extensive experience in Graph Neural Networks, search over LLMs and 3D understanding and reconstruction. Here are a few things I've done:
+I'm an entrepreneur and AI researcher. I'm currently working on making the business model of deploying autonomous robots into the real world to collect training data. Training robots in a lab is impractical since we have about 6 orders of magnitude less data for robotics than language models. If either robotics or language models will progress as embodied intelligence, something needs to fundamentally change about the current robotics business model.
+
+Some of my previous work includes:
 
 - I created the horse racing algorithm that is used by almost all bookmakers to calculate the odds of in-play horse racing.
 - I started a company at 17 years old selling marketing information to giftware wholesalers.
 - I graduated from the Cambridge MPhil program with a distinction. My thesis won the Highly Commended Research Project award.
 - I Created a system for [recording video in 3D](https://www.impossiblemotion.io/viewer.html?asset=tennis-demo).
 
-I'm extremely passionate about AI and the future it will bring. If you have any interesting research projects, please reach out to me on [LinkedIn](https://linkedin.com/in/sam-considine)! You can find some examples of the work I've done below or in the [posts](/posts) section of this website.
+I'm passionate about solving the most difficult challenges in AGI. If you have any interesting research projects, please reach out to me on [LinkedIn](https://linkedin.com/in/sam-considine).
 """
 
 
