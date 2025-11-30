@@ -21,7 +21,7 @@ hideHeader = false
 # Intro on main page, content in markdown
 homeIntroTitle = "Sam Considine's Page"
 homeIntroContent = """
-I'm an entrepreneur and AI researcher. I'm currently working on making the business model of deploying autonomous robots into the real world to collect training data. Training robots in a lab is impractical since we have about 6 orders of magnitude less data for robotics than language models. If either robotics or language models will progress as embodied intelligence, something needs to fundamentally change about the current robotics business model.
+I'm an entrepreneur and AI researcher. I'm currently working on the business model of deploying autonomous robots into the real world to collect training data. Training robots in a lab is impractical since we have about 6 orders of magnitude less data for robotics than language models. If either robotics or language models will progress as embodied intelligence, something needs to fundamentally change about the current robotics business model.
 
 Some of my previous work includes:
 
