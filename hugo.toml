@@ -1,7 +1,7 @@
 baseURL = 'samconsidine.com'
 languageCode = 'en-us'
 title = 'Sam Considine'
-theme = 'typo'
+theme = 'hugo-xmin'
 
 # # # Disable tags
 # disableKinds = ['taxonomy']
@@ -77,6 +77,12 @@ url = "/posts"
 [markup]
 [markup.highlight]
 style = 'bw'
+
+[markup.goldmark.extensions.passthrough]
+enable = true
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['$$', '$$']]
+inline = [['$', '$']]
 
 # Deploy settings
 

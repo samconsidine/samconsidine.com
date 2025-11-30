@@ -1,0 +1,28 @@
+{{ partial "header.html" . }}
+
+<div class="home-intro">
+  {{ with .Site.Params.homeIntroTitle }}
+  <h1>{{ . }}</h1>
+  {{ end }}
+  {{ with .Site.Params.homeIntroContent }}
+  <div class="intro-content">
+    {{ . | markdownify }}
+  </div>
+  {{ end }}
+</div>
+
+{{ with .Site.Params.homeCollectionTitle }}
+<h2>{{ . }}</h2>
+{{ end }}
+
+<ul>
+  {{ $collection := .Site.Params.homeCollection | default "posts" }}
+  {{ range (where .Site.RegularPages "Section" $collection) }}
+  <li>
+    <span class="date">{{ .Date.Format "2006/01/02" }}</span>
+    <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
+  </li>
+  {{ end }}
+</ul>
+
+{{ partial "footer.html" . }}
