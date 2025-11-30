@@ -1,6 +1,6 @@
 ---
 title: "Teleop: What I Know"
-date: 2024-11-30
+date: 2025-11-30
 author: "Sam Considine"
 tags: ["robotics", "teleoperation", "startups"]
 ---
