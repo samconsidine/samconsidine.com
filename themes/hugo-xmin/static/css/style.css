@@ -1,18 +1,22 @@
 body {
   max-width: 800px;
   margin: auto;
-  padding: 1em;
+  padding: 2em;
   line-height: 1.5;
 }
 
 /* header and footer areas */
 .menu { padding: 0; }
 .menu li { display: inline-block; }
-.article-meta, .menu a {
+.menu a {
   text-decoration: none;
   background: #eee;
   padding: 5px;
   border-radius: 5px;
+}
+.article-meta {
+  text-decoration: none;
+  margin-bottom: 4em;
 }
 .menu, .article-meta, footer { text-align: center; }
 .title { font-size: 1.1em; }
