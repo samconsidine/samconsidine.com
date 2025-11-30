@@ -70,12 +70,12 @@ $$
 Then, we normalize this matrix:
 
 $$
-    \mathbf{P}\_{ij} = \frac{\hat{\mathbf{P}}\_{ij}}{\sum\_{i=0}^N \hat{\mathbf{P}}\_{ij}}
+    \mathbf{P}_{ij} = \frac{\hat{\mathbf{P}}_{ij}}{\sum_{i=0}^N \hat{\mathbf{P}}_{ij}}
 $$
 The layer update function for the modified GRAPE model becomes:
 
 $$
-h\_u^{\ell+1} = \phi \Bigg( h\_u^{\ell}, \sum\_{v \in V} \Big( \mathbf{P}\_v * \psi \left( h\_v^{\ell}, e\_{uv} \right) \Big) \Bigg)
+h_u^{\ell+1} = \phi \Bigg( h_u^{\ell}, \sum_{v \in V} \Big( \mathbf{P}_v * \psi \left( h_v^{\ell}, e_{uv} \right) \Big) \Bigg)
 $$
 
 where $*$ represents element-wise multiplication, $\psi: \mathbb{R}^{|e| + |h|} \mapsto \mathbb{R}^{M}$, and $\mathbf{P}_v$ is the row of the pathways matrix corresponding to gene $v$.
