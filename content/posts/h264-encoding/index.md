@@ -5,7 +5,7 @@ author: "Sam Considine"
 tags: ["video", "h264", "webrtc", "streaming"]
 ---
 
-## 1. THE RAW INPUT
+**1. THE RAW INPUT**
 
 A single 1080p frame is just a grid of pixels:
 
@@ -17,7 +17,7 @@ At 30fps: 186 MB/second = 1.5 Gbps
 That's way too much for any network.
 ```
 
-## 2. COLOR SPACE CONVERSION
+**2. COLOR SPACE CONVERSION**
 
 First, convert RGB to **YUV (typically NV12 or I420)**:
 
@@ -36,7 +36,7 @@ We can subsample color without noticeable quality loss.
                                      50% smaller already
 ```
 
-## 3. DIVIDE INTO MACROBLOCKS
+**3. DIVIDE INTO MACROBLOCKS**
 
 The frame is split into 16×16 pixel blocks:
 
@@ -52,7 +52,7 @@ The frame is split into 16×16 pixel blocks:
 1080p = 120 × 68 = 8,160 macroblocks per frame
 ```
 
-## 4. FRAME TYPE DECISION
+**4. FRAME TYPE DECISION**
 
 The encoder decides: **I-frame, P-frame, or B-frame?**
 
@@ -79,7 +79,7 @@ B-FRAME (Bi-directional):
                          BUT adds latency (must wait for future frame)
 ```
 
-## 5. MOTION ESTIMATION (P/B frames only)
+**5. MOTION ESTIMATION (P/B frames only)**
 
 For each macroblock, find where it "came from" in the reference frame:
 
@@ -100,7 +100,7 @@ Instead of storing the block, store:
 - Residual (small differences): few bytes
 ```
 
-## 6. TRANSFORM (DCT)
+**6. TRANSFORM (DCT)**
 
 Each macroblock's residual is transformed using **Discrete Cosine Transform**:
 
@@ -119,7 +119,7 @@ Most energy concentrates in top-left (low frequencies).
 Bottom-right values are often near zero (high frequencies).
 ```
 
-## 7. QUANTIZATION (Lossy Step!)
+**7. QUANTIZATION (Lossy Step!)**
 
 Divide DCT coefficients by a quantization matrix, round to integers:
 
@@ -139,7 +139,7 @@ This is where bitrate control happens!
 - Want better quality? Decrease quantization (keep more detail)
 ```
 
-## 8. ENTROPY CODING
+**8. ENTROPY CODING**
 
 Convert the quantized coefficients to bits efficiently:
 
@@ -154,7 +154,7 @@ CABAC (better compression, used in Main/High profile):
 - Slightly slower to decode
 ```
 
-## 9. NAL UNITS
+**9. NAL UNITS**
 
 The encoded data is packaged into **NAL (Network Abstraction Layer) units**:
 
@@ -173,7 +173,7 @@ NAL Unit Types:
 - SEI: Supplemental info (timestamps, etc.)
 ```
 
-## 10. RTP PACKETIZATION
+**10. RTP PACKETIZATION**
 
 NAL units are split into RTP packets for network transport:
 
@@ -206,7 +206,7 @@ Small NAL units can be aggregated (STAP-A):
 └──────────────────────────────┘
 ```
 
-## 11. WEBRTC TRANSPORT
+**11. WEBRTC TRANSPORT**
 
 RTP packets go through the WebRTC stack:
 
@@ -230,7 +230,7 @@ RTP packets go through the WebRTC stack:
 └─────────────────────────────────────────────────────────┘
 ```
 
-## 12. CLIENT-SIDE DECODE
+**12. CLIENT-SIDE DECODE**
 
 Reverse the process:
 
@@ -256,7 +256,7 @@ RTP Packets
 
 ---
 
-## LATENCY AT EACH STAGE
+**LATENCY AT EACH STAGE**
 
 | Stage | Typical Latency | Notes |
 |-------|-----------------|-------|
