@@ -29,11 +29,11 @@ hr {
 /* code */
 pre {
   border: 1px solid #ddd;
-  box-shadow: 5px 5px 5px #eee;
+  background: #f5f5f5;
   padding: 1em;
   overflow-x: auto;
 }
-code { background: #f9f9f9; }
+code { background: #f0f0f0; }
 pre code { background: none; }
 
 /* misc elements */
