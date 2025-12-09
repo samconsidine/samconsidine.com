@@ -1,5 +1,5 @@
 ---
-title: "H.264 Video Encoding: From Pixels to Packets"
+title: "The H.264 Encoding and WebRTC Stack"
 date: 2024-12-09
 author: "Sam Considine"
 tags: ["video", "h264", "webrtc", "streaming"]
