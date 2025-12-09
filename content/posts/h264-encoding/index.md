@@ -272,3 +272,271 @@ RTP Packets
 | Render | 0-16ms | Display refresh rate |
 
 **Total: ~50-300ms glass-to-glass**
+
+---
+
+# Part 2: How WebRTC Works
+
+WebRTC (Web Real-Time Communication) is a protocol stack for peer-to-peer audio, video, and data transmission directly between browsers/apps without requiring a media server.
+
+## The Core Problem
+
+Two devices on the internet usually can't talk directly because:
+
+1. **NAT (Network Address Translation)** - Your device has a private IP (192.168.x.x), not a public one
+2. **Firewalls** - Block unsolicited incoming connections
+3. **No discovery mechanism** - How do peers find each other?
+
+WebRTC solves all three.
+
+---
+
+## The Connection Process
+
+```
+┌─────────────┐                                    ┌─────────────┐
+│   Peer A    │                                    │   Peer B    │
+│  (Browser)  │                                    │  (Browser)  │
+└──────┬──────┘                                    └──────┬──────┘
+       │                                                  │
+       │  1. Create Offer (SDP)                          │
+       │─────────────────────────────────────────────────►│
+       │         (via Signaling Server)                   │
+       │                                                  │
+       │  2. Create Answer (SDP)                         │
+       │◄─────────────────────────────────────────────────│
+       │         (via Signaling Server)                   │
+       │                                                  │
+       │  3. Exchange ICE Candidates                      │
+       │◄────────────────────────────────────────────────►│
+       │         (via Signaling Server)                   │
+       │                                                  │
+       │  4. STUN: Discover public IPs                   │
+       │◄──────────────► STUN Server ◄───────────────────►│
+       │                                                  │
+       │  5. Direct P2P Connection (or via TURN)         │
+       │◄════════════════════════════════════════════════►│
+       │              UDP (media flows)                   │
+```
+
+---
+
+## Step 1: Signaling (Out of Band)
+
+WebRTC doesn't define how peers discover each other. You need a **signaling server** (WebSocket, HTTP, carrier pigeon - doesn't matter) to exchange:
+
+- **SDP (Session Description Protocol)** - "Here's what I can send/receive"
+- **ICE Candidates** - "Here's how you might reach me"
+
+```
+SDP Offer Example (simplified):
+
+v=0
+o=- 12345 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+m=video 9 UDP/TLS/RTP/SAVPF 96
+a=rtpmap:96 H264/90000
+a=fmtp:96 profile-level-id=42e01f
+a=sendrecv
+```
+
+This says: "I want to send/receive H.264 video, payload type 96, at 90kHz clock rate"
+
+---
+
+## Step 2: ICE (Interactive Connectivity Establishment)
+
+ICE finds the best path between peers by gathering **candidates**:
+
+```
+Candidate Types (in order of preference):
+
+1. HOST        - Direct local IP (192.168.1.50:54321)
+                 Works if peers are on same network
+
+2. SRFLX       - Server Reflexive (via STUN)
+                 Your public IP as seen by STUN server
+                 Works if NAT allows direct UDP
+
+3. RELAY       - Via TURN server
+                 All traffic relayed through server
+                 Always works, but adds latency + cost
+```
+
+**STUN (Session Traversal Utilities for NAT)**:
+```
+┌─────────┐                          ┌─────────────┐
+│  Peer   │  "What's my public IP?"  │ STUN Server │
+│         │─────────────────────────►│             │
+│         │                          │             │
+│         │  "You're 203.0.113.50"   │             │
+│         │◄─────────────────────────│             │
+└─────────┘                          └─────────────┘
+
+Now peer knows its public address and can share it as an ICE candidate.
+```
+
+**TURN (Traversal Using Relays around NAT)**:
+```
+When direct connection fails (symmetric NAT, strict firewall):
+
+┌─────────┐         ┌─────────────┐         ┌─────────┐
+│ Peer A  │◄───────►│ TURN Server │◄───────►│ Peer B  │
+└─────────┘         └─────────────┘         └─────────┘
+
+All media flows through TURN. Works everywhere, but:
+- Adds latency (extra hop)
+- Costs money (bandwidth)
+- Not truly peer-to-peer
+```
+
+---
+
+## Step 3: DTLS Handshake
+
+Once ICE finds a path, peers do a **DTLS (Datagram TLS)** handshake over UDP:
+
+```
+┌─────────┐                           ┌─────────┐
+│ Peer A  │                           │ Peer B  │
+└────┬────┘                           └────┬────┘
+     │                                     │
+     │  ClientHello (with fingerprint)     │
+     │────────────────────────────────────►│
+     │                                     │
+     │  ServerHello + Certificate          │
+     │◄────────────────────────────────────│
+     │                                     │
+     │  Key Exchange                       │
+     │◄───────────────────────────────────►│
+     │                                     │
+     │  ═══ Encrypted Channel Ready ═══    │
+```
+
+The certificate fingerprints were exchanged in the SDP, so peers can verify identity.
+
+---
+
+## Step 4: SRTP Media Flow
+
+Media is encrypted with **SRTP (Secure RTP)** using keys derived from DTLS:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    SRTP Packet                       │
+├──────────────┬──────────────────────┬───────────────┤
+│  RTP Header  │   Encrypted Payload  │  Auth Tag     │
+│   12 bytes   │    (video/audio)     │   10 bytes    │
+└──────────────┴──────────────────────┴───────────────┘
+
+RTP Header contains:
+- Sequence number (for reordering)
+- Timestamp (for synchronization)
+- SSRC (identifies the stream)
+- Payload type (codec identifier)
+```
+
+---
+
+## Step 5: RTCP Feedback
+
+Alongside media, **RTCP (RTP Control Protocol)** provides feedback:
+
+```
+RTCP Packet Types:
+
+SR  (Sender Report)      - "I've sent X packets, Y bytes"
+RR  (Receiver Report)    - "I received X%, lost Y packets"
+NACK                     - "Please retransmit packet #1234"
+PLI (Picture Loss)       - "I lost frames, send a keyframe"
+FIR (Full Intra Request) - "Send a keyframe NOW"
+REMB                     - "My estimated bandwidth is X bps"
+```
+
+This enables:
+- Packet loss detection and retransmission
+- Bandwidth estimation and adaptation
+- Keyframe requests for recovery
+
+---
+
+## Data Channels (SCTP)
+
+WebRTC also supports arbitrary data via **SCTP over DTLS**:
+
+```
+┌─────────────────────────────────────────┐
+│              Data Channel               │
+├─────────────────────────────────────────┤
+│  SCTP (Stream Control Transmission)     │
+│  - Reliable or unreliable delivery      │
+│  - Ordered or unordered                 │
+│  - Multiple channels multiplexed        │
+├─────────────────────────────────────────┤
+│  DTLS (encryption)                      │
+├─────────────────────────────────────────┤
+│  UDP                                    │
+└─────────────────────────────────────────┘
+
+Use cases:
+- Game state updates
+- Chat messages
+- File transfer
+- Control commands (like joystick input in teleoperation)
+```
+
+---
+
+## The Full Stack
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Application                           │
+│         (your video call / streaming app)                │
+├───────────────────────┬─────────────────────────────────┤
+│      Media Track      │         Data Channel            │
+│   (video/audio)       │      (arbitrary data)           │
+├───────────────────────┼─────────────────────────────────┤
+│        SRTP           │            SCTP                 │
+│   (encrypted media)   │    (reliable/unreliable data)   │
+├───────────────────────┴─────────────────────────────────┤
+│                         DTLS                             │
+│                  (key exchange + encryption)             │
+├─────────────────────────────────────────────────────────┤
+│                          ICE                             │
+│              (NAT traversal + path selection)            │
+├─────────────────────────────────────────────────────────┤
+│                          UDP                             │
+│                    (unreliable transport)                │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Why UDP?
+
+TCP would seem safer (guaranteed delivery), but for real-time media:
+
+| TCP | UDP |
+|-----|-----|
+| Retransmits lost packets | Drops lost packets |
+| Head-of-line blocking | No blocking |
+| Adds latency on loss | Constant latency |
+| Good for files | Good for live media |
+
+A retransmitted video frame that arrives 500ms late is useless - you've already moved on. Better to drop it and show the next frame.
+
+WebRTC builds its own reliability mechanisms (NACK, FEC) on top of UDP when needed, giving fine-grained control over the latency/reliability trade-off.
+
+---
+
+## Typical Latency Breakdown
+
+| Component | Latency |
+|-----------|---------|
+| ICE negotiation | 200-2000ms (one-time) |
+| DTLS handshake | 100-300ms (one-time) |
+| Per-packet network | 20-150ms |
+| Jitter buffer | 0-50ms |
+| **Steady-state total** | **~50-200ms** |
